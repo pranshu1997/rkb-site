@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f2f2f7">
+<meta name="color-scheme" content="light dark">
+<meta name="rkb-rem">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("theme")||"system"}catch(e){}</script>
+<script>if(top===self){const m=matchMedia("(min-width:1024px)"),f=()=>document.documentElement.dataset.layout=m.matches?"desktop":"phone";f();m.addEventListener("change",f)}</script>
+<title>RKB Health</title>
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RKB">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="css/app.css">
+<link rel="modulepreload" href="js/app.js">
+<link rel="modulepreload" href="js/db.js">
+<link rel="modulepreload" href="js/today.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm" crossorigin>
+<script type="module" src="js/app.js"></script>
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="stylesheet" href="../rkb-tokens.css">
+<link rel="stylesheet" href="../shell.css">
+<script src="../shell.js"></script>
+</head>
+<body>
+<div id="net" role="status" hidden></div>
+<main id="app"><p class="center muted">…</p></main>
+<div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

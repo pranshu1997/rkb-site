@@ -1,0 +1,29 @@
+/* RKB design tokens: the ONE source. Loaded by the window (index.html) and injected into every section page by build.py.
+   Apps may also @import/link it directly. Colours are identical to the values Health, Tasks and News already carry.
+   Type is a rem scale: text size (Normal/Large/Larger) changes the root font-size only, so every rem value grows together. */
+:root {
+  --bg: #f2f2f7; --card: #fff; --fill: #e9e9ef; --line: rgba(60, 60, 67, 0.16); --text: #000; --muted: #636366;
+  --blue: #0066d6; --ok: #1e7a34; --warn: #c93400; --bad: #d70015;
+  --blue-fill: #0066d6; --red-fill: #d70015; --on-accent: #fff; --green: #34c759; --red: #ff3b30; --amber: #ff9500; --shadow: none;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, "Segoe UI", Roboto, sans-serif;
+  /* spacing scale, same names and values the apps already use (px: does not grow with text size) */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px;
+  /* Base scale = Nyx Wallet (--h5-*): calm, semibold titles, regular body, 20px cards. Touch floor 48 / primary 56 at every text size. */
+  --r-card: 20px; --r-control: 12px; --tap: 48px; --tap-primary: 56px; --margin: var(--sp-4); --gap-card: var(--sp-3); --gap-section: var(--sp-5);
+  --fw-title: 600; --fw-strong: 600; --fw-body: 400;
+  --font-num: ui-rounded, "SF Pro Rounded", var(--font);
+  /* type scale in rem (16px root = Normal) */
+  --fs-foot: 0.8125rem; --fs-secondary: 0.875rem; --fs-body: 0.9375rem; --fs-row: 0.9375rem; --fs-head: 1.0625rem;
+  --fs-section: 1.125rem; --fs-value: 1.375rem; --fs-title: 1.75rem;
+  --fs-title2: 1.125rem; --fs-title1: 1.75rem;
+  /* Safe areas inside the RKB window. The window sets --rkb-sab (some phones report 0 in a frame); the top is always 0 (the RKB bar owns it). */
+  --rkb-sat: 0px; --rkb-sab: 0px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme=light]) { --bg: #000; --card: #1c1c1e; --fill: #2c2c2e; --line: rgba(84, 84, 88, 0.6); --text: #fff; --muted: #98989f; --blue: #3d9bff; --ok: #30d158; --warn: #ff9f0a; --bad: #ff453a; --blue-fill: #0a6fdc; --green: #30d158; --red: #ff453a; --amber: #ff9f0a; --seg-on: #636366; color-scheme: dark; } }
+:root[data-theme=dark] { --bg: #000; --card: #1c1c1e; --fill: #2c2c2e; --line: rgba(84, 84, 88, 0.6); --text: #fff; --muted: #98989f; --blue: #3d9bff; --ok: #30d158; --warn: #ff9f0a; --bad: #ff453a; --blue-fill: #0a6fdc; --green: #30d158; --red: #ff453a; --amber: #ff9f0a; --seg-on: #636366; color-scheme: dark; }
+/* The one text-size switch. Papa's account starts on Large. */
+html { font-size: calc(16px * var(--rkb-scale, 1)); -webkit-text-size-adjust: 100%; }
+html[data-size=large] { --rkb-scale: 1.15; }
+html[data-size=larger] { --rkb-scale: 1.3; }

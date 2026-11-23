@@ -1,0 +1,42 @@
+/* RKB shell, section side: the Settings panel (opens inside the section's frame, under the RKB bar) and text size.
+   Colours come from the app's own tokens (--bg --card --fill --line --text --blue), so light and dark follow them. Spacing: 8-pt scale only. */
+#rkb-panel {
+  position: fixed; inset: 0; z-index: 60; overflow-y: auto; background: var(--bg, #f2f2f7); color: var(--text, #000);
+  font: var(--fs-head)/1.4 var(--font, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif);
+  padding: 0 16px calc(32px + var(--rkb-sab, 0px));
+}
+.rkb-panel-in { max-width: 600px; margin: 0 auto; display: grid; gap: 24px; padding-top: 8px; }
+.rkb-panel-in > header { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: var(--tap-primary, 56px); }
+/* Every size is a --fs-* rem token, so the panel grows with Large / Larger like the sections do. */
+.rkb-panel-in h1 { margin: 0; font-size: var(--fs-title, 1.75rem); font-weight: 600; }
+.rkb-panel-in h2 { margin: 0 0 8px; font-size: var(--fs-section, 1.125rem); font-weight: 600; }
+.rkb-panel-in section { display: grid; }
+.rkb-close { min-height: var(--tap, 48px); min-width: var(--tap, 48px); padding: 0 16px; border-radius: 12px; border: 0; background: none; color: var(--blue, #0066d6); font: inherit; font-weight: 600; cursor: pointer; }
+.rkb-seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: var(--fill, #e9e9ef); }
+.rkb-seg button {
+  min-height: var(--tap, 48px); padding: 8px 12px; border: 0; border-radius: 8px; background: none; color: var(--text, #000); font: inherit; font-weight: 500; cursor: pointer;
+}
+.rkb-seg button[aria-pressed=true] { background: var(--card, #fff); font-weight: 600; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
+.rkb-out {
+  min-height: var(--tap-primary, 56px); padding: 8px 16px; border: 0; border-radius: 12px; background: var(--card, #fff); color: var(--bad, #d70015); font: inherit; font-weight: 600; cursor: pointer;
+}
+.rkb-msg { margin: 8px 0 0; color: var(--muted, #636366); font-size: var(--fs-body, 0.9375rem); }
+.rkb-slot { display: grid; gap: 24px; }
+#rkb-panel .rkb-slot > [data-view] { padding: 0; margin-inline: 0; max-width: none; } /* the section's extras use the panel's column, not their own */
+html.rkb-panel-open body { overflow: hidden; }
+#rkb-panel:focus { outline: none; }
+
+/* Text size: the root font-size in rkb-tokens.css scales every rem. */
+#rkb-panel button:focus-visible { outline: 3px solid var(--blue, #0066d6); outline-offset: 2px; }
+.rkb-go { min-height: var(--tap-primary, 56px); padding: 8px 16px; border: 0; border-radius: 12px; background: var(--card, #fff); color: var(--blue, #0066d6); font: inherit; font-weight: 600; cursor: pointer; }
+/* Touch: no double-tap zoom, no grey flash; pressed state shows at once. Hover only where there is a pointer. */
+#rkb-panel button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: background-color 0.12s, opacity 0.12s; }
+#rkb-panel .rkb-close:active, #rkb-panel .rkb-seg button:active, .rkb-out:active, .rkb-go:active { opacity: 0.7; }
+@media (hover: hover) {
+  .rkb-close:hover, .rkb-seg button[aria-pressed=false]:hover { background: color-mix(in srgb, var(--text, #000) 8%, transparent); }
+  .rkb-out:hover, .rkb-go:hover { background: color-mix(in srgb, var(--text, #000) 8%, var(--card, #fff)); }
+}
+@media (prefers-reduced-motion: reduce) { #rkb-panel button { transition: none; } }
+/* Desktop: wider side margins, a 720px column (contract 3 + 7b). */
+html[data-layout=desktop] #rkb-panel { padding-inline: 32px; }
+html[data-layout=desktop] .rkb-panel-in { max-width: 720px; padding-top: 24px; }

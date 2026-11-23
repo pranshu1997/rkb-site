@@ -1,0 +1,154 @@
+/* RKB window: one top bar, one frame per section. Same tokens as the apps (Pulse CSS), 8-pt spacing only. */
+:root { --rkb-top: calc(64px + env(safe-area-inset-top)); --rkb-vb: 0px; }
+/* No font shorthand on html: it would reset the root font-size that rkb-tokens.css scales with text size. */
+html, body { height: 100%; margin: 0; overflow: hidden; background: var(--bg); color: var(--text); }
+body { font: var(--fs-body)/1.4 var(--font); }
+a, button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+#rkb-probe { position: fixed; visibility: hidden; padding-bottom: env(safe-area-inset-bottom); }
+#rkb-bar {
+  position: fixed; inset: 0 0 auto 0; z-index: 2; display: flex; align-items: center; gap: 8px; box-sizing: border-box;
+  height: var(--rkb-top); padding: env(safe-area-inset-top) 8px 0;
+  background: color-mix(in srgb, var(--card) 86%, transparent); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--line);
+}
+/* margin-inline 6px = the capsule bleed, so an end capsule stays 8px off the screen edge and the gear. */
+#rkb-bar nav { flex: 1; min-width: 0; margin-inline: 6px; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
+/* Icon over label (iOS tab-bar pattern, 56px target); the current section is a tinted capsule, not a raised white tab. */
+#rkb-bar a {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 56px; min-width: 0; padding: 0 4px; border-radius: 16px; box-sizing: border-box;
+  color: var(--muted); font-size: var(--fs-secondary); line-height: 1.3; font-weight: 600; text-decoration: none; white-space: nowrap; transition: background-color 0.12s, color 0.12s, opacity 0.12s;
+}
+/* Label mixed 15% toward --text: plain --blue on the tint is 4.4:1 in light; this is 5.6:1 light, 5:1+ dark. */
+#rkb-bar a[aria-current] { background: color-mix(in srgb, var(--blue) 14%, transparent); color: color-mix(in srgb, var(--blue) 85%, var(--text));
+  /* The capsule is a box: 12px each side of its label. It bleeds 6px into the gaps instead of widening its column, so the other icons stay put on a tab switch. */
+  padding: 0 12px; margin-inline: -6px; }
+.rkb-gear { width: var(--tap); height: var(--tap); flex: none; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--fill); color: var(--blue); cursor: pointer; transition: background-color 0.12s, opacity 0.12s; }
+/* Hover: 8% --text layer, pointer devices only. Pressed: dimmed at once, on touch too. */
+@media (hover: hover) {
+  #rkb-bar a:not([aria-current]):hover, #rkb-side a:not([aria-current]):hover { background: color-mix(in srgb, var(--text) 8%, transparent); }
+  /* 2px inset: the current capsule bleeds 6px into a 4px gap, so a hover tint next to it would overlap 2px. */
+  #rkb-bar a:not([aria-current]):hover { margin-inline: 2px; }
+  .rkb-gear:hover { background: color-mix(in srgb, var(--text) 8%, var(--fill)); }
+  .rkb-side-set.rkb-gear:hover { background: color-mix(in srgb, var(--text) 8%, transparent); }
+}
+#rkb-bar a:active, #rkb-side a:active, .rkb-gear:active { opacity: 0.7; }
+#rkb-bar a:focus-visible, .rkb-gear:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { #rkb-bar a, #rkb-side a, .rkb-gear { transition: none; } }
+#rkb-viewer { position: fixed; z-index: 1; inset: var(--rkb-top) 16px auto; height: var(--tap); margin-top: 8px; box-sizing: border-box; display: flex; align-items: center; padding: 0 16px; border-radius: 12px;
+  background: var(--fill); color: var(--text); font-size: var(--fs-secondary); font-weight: 600; }
+#rkb-viewer[hidden] { display: none; }
+html.rkb-viewing { --rkb-vb: 56px; }
+#rkb-frames { position: fixed; inset: calc(var(--rkb-top) + var(--rkb-vb)) 0 0 0; }
+.rkb-frame { display: block; width: 100%; height: 100%; border: 0; background: var(--bg); }
+.rkb-frame[hidden] { display: none; }
+
+/* Desktop (window >= 1024px): left sidebar replaces the top bar. Contract: rkb6-desktop-contract.md. Phone is untouched. */
+#rkb-side { display: none; }
+@media (min-width: 1024px) {
+  :root { --rkb-top: 0px; --rkb-side: 248px; }
+  #rkb-bar { display: none; }
+  #rkb-side {
+    position: fixed; inset: 0 auto 0 0; width: var(--rkb-side); z-index: 2; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding: 24px 16px;
+    background: var(--card); border-right: 0.5px solid var(--line);
+  }
+  .rkb-brand { padding: 0 12px; font-size: var(--fs-section); font-weight: var(--fw-title); }
+  #rkb-side nav { display: grid; gap: 4px; }
+  #rkb-side a {
+    display: flex; align-items: center; min-height: var(--tap); padding: 0 12px; border-radius: 12px; box-sizing: border-box;
+    color: var(--text); font-size: var(--fs-body); font-weight: 600; text-decoration: none; transition: background-color 0.12s, opacity 0.12s;
+  }
+  #rkb-side a.sub { margin-left: 16px; font-weight: 500; color: var(--muted); }
+  #rkb-side a { gap: 12px; }
+  #rkb-side a svg { width: 22px; height: 22px; flex: none; }
+  #rkb-side a[aria-current] { background: var(--blue-fill); color: var(--on-accent); }
+  #rkb-side a:focus-visible, #rkb-side .rkb-gear:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+  .rkb-side-set { margin-top: auto; border-radius: 12px; background: none; width: 100%; height: var(--tap); display: flex; align-items: center; gap: 12px; padding: 0 12px; box-sizing: border-box; font: inherit; font-weight: 600; text-align: left; }
+  #rkb-viewer { inset: 8px 16px auto calc(var(--rkb-side) + 16px); margin-top: 0; }
+  #rkb-frames { inset: var(--rkb-vb) 0 0 var(--rkb-side); }
+  html.rkb-viewing { --rkb-vb: 64px; }
+}
+
+/* Variant B, icon home (phones; host.js sets html[data-home=icons]). Big icon tiles on one screen; inside a section the bar
+   becomes "‹ Home" | section name | gear. Tokens and the 8-pt scale only; Papa's text size scales everything (rem). */
+#rkb-home, .rkb-homebtn, .rkb-title { display: none; }
+html[data-home=icons] #rkb-bar nav { display: none; }
+html[data-home=icons] .rkb-homebtn {
+  display: flex; align-items: center; gap: 4px; flex: none; min-height: var(--tap-primary); padding: 0 12px 0 8px; border: 0; border-radius: 16px; background: none;
+  color: var(--blue); font: inherit; font-size: var(--fs-head); font-weight: 600; cursor: pointer; transition: background-color 0.12s, opacity 0.12s;
+}
+html[data-home=icons] .rkb-title { display: block; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-size: var(--fs-head); font-weight: 600; }
+html[data-home=icons] .rkb-homebtn:active { opacity: 0.7; }
+html[data-home=icons] .rkb-homebtn:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+html[data-home=icons][data-app=home] #rkb-bar { display: none; }
+html[data-home=icons][data-app=home] #rkb-home {
+  display: block; position: fixed; inset: 0; z-index: 1; overflow-y: auto; box-sizing: border-box; background: var(--bg);
+  padding: calc(env(safe-area-inset-top) + 24px) 16px calc(env(safe-area-inset-bottom) + 24px);
+}
+.rkb-hello { margin: 0 0 24px; padding: 0 4px; font-size: var(--fs-title); line-height: 1.25; font-weight: var(--fw-title); }
+.rkb-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+html[data-size=larger] .rkb-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.rkb-tile {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; padding: 12px 8px;
+  border: 0.5px solid var(--line); border-radius: var(--r-card); background: var(--card); color: var(--text); text-decoration: none; font: inherit;
+  font-size: var(--fs-secondary); font-weight: 600; line-height: 1.25; text-align: center; cursor: pointer; transition: opacity 0.12s, transform 0.12s, background-color 0.12s;
+}
+.rkb-tile { min-height: 144px; }
+/* Larger = 2 columns, 5 rows: 120px rows keep all 9 tiles above the fold on a 360x800 phone and above the iPhone home bar (icon, gap and label still fit). */
+html[data-size=larger] .rkb-tile { min-height: 120px; }
+/* 64px icon badge. Outline icons: tone on a 14% tint of itself. Brand logos: white mark on the brand colour (white on each >= 3:1). */
+.rkb-ico { display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: var(--r-lg); background: color-mix(in srgb, var(--tone, var(--blue)) 14%, var(--card)); color: var(--tone, var(--blue)); }
+.rkb-ico svg { width: 40px; height: 40px; }
+.rkb-ico[data-brand] { color: #fff; --brand: #1da851; background: var(--brand); }
+.rkb-ico[data-brand] svg { fill: currentColor; stroke: none; }
+.rkb-ico[data-brand=mail] { --brand: #ea4335; }
+.rkb-ico[data-brand=calls] { --brand: #1e8e3e; }
+.rkb-ico[data-brand=sms] { background: none; color: #1a73e8; }
+.rkb-ico[data-brand=sms] svg { width: 64px; height: 64px; }
+.rkb-tile span { max-width: 100%; overflow-wrap: anywhere; }
+.rkb-tile:active { opacity: 0.7; transform: scale(0.985); }
+.rkb-tile:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+@media (hover: hover) { .rkb-tile:hover { background: color-mix(in srgb, var(--text) 8%, var(--card)); } html[data-home=icons] .rkb-homebtn:hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .rkb-tile, .rkb-homebtn { transition: none; } .rkb-tile:active { transform: none; } }
+
+/* Groups on the icon home: a short heading over each set of tiles; Settings is a row at the bottom, not a tile. */
+.rkb-group { margin: 0 0 24px; }
+.rkb-group h2 { margin: 0 0 8px; padding: 0 4px; font-size: var(--fs-head); font-weight: 600; line-height: 1.3; color: var(--muted); }
+.rkb-setrow { display: flex; align-items: center; gap: 12px; width: 100%; min-height: var(--tap-primary); box-sizing: border-box; padding: 0 16px; border: 0.5px solid var(--line); border-radius: var(--r-card);
+  background: var(--card); color: var(--text); font: inherit; font-size: var(--fs-row); font-weight: 600; cursor: pointer; transition: opacity 0.12s, background-color 0.12s; }
+.rkb-setrow svg { width: 24px; height: 24px; flex: none; color: var(--muted); }
+.rkb-setrow:active { opacity: 0.7; }
+.rkb-setrow:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+@media (hover: hover) { .rkb-setrow:hover { background: color-mix(in srgb, var(--text) 8%, var(--card)); } }
+#rkb-side .rkb-gh { margin: 16px 0 0; padding: 0 12px; font-size: var(--fs-secondary); font-weight: 600; line-height: 1.3; color: var(--muted); }
+#rkb-side .rkb-gh:first-child { margin-top: 0; }
+
+/* One RKB sign-in. While html[data-gate] is set nothing else is shown or loaded. */
+#rkb-login, #rkb-note { display: none; }
+html[data-gate] #rkb-bar, html[data-gate] #rkb-side, html[data-gate] #rkb-frames, html[data-gate] #rkb-viewer, html[data-gate] #rkb-home { display: none !important; }
+html[data-gate] #rkb-login {
+  position: fixed; inset: 0; z-index: 4; display: grid; justify-items: center; align-content: center; overflow-y: auto; box-sizing: border-box; background: var(--bg);
+  padding: calc(env(safe-area-inset-top) + 24px) 16px calc(env(safe-area-inset-bottom) + 24px);
+}
+.rkb-lcard { width: 100%; max-width: 440px; box-sizing: border-box; display: grid; gap: 8px; padding: 24px 16px; border-radius: var(--r-card); background: var(--card); }
+.rkb-lcard h1 { margin: 0; font-size: var(--fs-title); line-height: 1.25; font-weight: var(--fw-title); }
+.rkb-lsub { margin: 0 0 16px; font-size: var(--fs-body); line-height: 1.45; color: var(--muted); }
+.rkb-lcard label { margin-top: 8px; font-size: var(--fs-body); font-weight: 600; }
+.rkb-lcard input { width: 100%; min-width: 0; min-height: var(--tap-primary); box-sizing: border-box; padding: 0 16px; border: 1px solid var(--line); border-radius: var(--r-control); background: var(--bg); color: var(--text); font: inherit; font-size: 1rem; }
+.rkb-lcard input:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.rkb-pw { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.rkb-show, .rkb-llang { min-width: var(--tap); min-height: var(--tap); padding: 0 12px; border: 0; border-radius: var(--r-control); background: none; color: var(--blue); font: inherit; font-size: var(--fs-body); font-weight: 600; cursor: pointer; }
+.rkb-lerr { margin: 0; color: var(--bad); font-size: var(--fs-body); line-height: 1.45; }
+.rkb-lerr:empty { display: none; }
+.rkb-lgo { min-height: var(--tap-primary); margin-top: 16px; padding: 0 16px; border: 0; border-radius: var(--r-control); background: var(--blue-fill); color: var(--on-accent); font: inherit; font-size: var(--fs-head); font-weight: 600; cursor: pointer; }
+.rkb-lgo:disabled { opacity: 0.6; cursor: default; }
+.rkb-lgo:active, .rkb-show:active, .rkb-llang:active { opacity: 0.7; }
+.rkb-lgo:focus-visible, .rkb-show:focus-visible, .rkb-llang:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+@media (hover: hover) { .rkb-show:hover, .rkb-llang:hover { background: color-mix(in srgb, var(--text) 8%, transparent); } }
+@media (min-width: 1024px) { .rkb-lcard { padding: 24px 20px; } }
+/* A section that could not sign in: one calm note over the first screen, until closed. Errors never fade away. */
+html:not([data-gate]) #rkb-note { position: fixed; z-index: 3; inset: calc(var(--rkb-top) + 8px) 16px auto calc(var(--rkb-side, 0px) + 16px); display: flex; align-items: center; gap: 8px; box-sizing: border-box; padding: 8px 8px 8px 16px;
+  border: 0.5px solid var(--line); border-radius: var(--r-md); background: var(--card); color: var(--text); font-size: var(--fs-body); line-height: 1.4; }
+html[data-home=icons][data-app=home]:not([data-gate]) #rkb-note { top: calc(env(safe-area-inset-top) + 8px); }
+#rkb-note p { flex: 1; margin: 0; }
+#rkb-note button { flex: none; min-height: var(--tap); padding: 0 12px; border: 0; border-radius: var(--r-control); background: none; color: var(--blue); font: inherit; font-weight: 600; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .rkb-setrow { transition: none; } }
